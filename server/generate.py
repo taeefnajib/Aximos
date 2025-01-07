@@ -47,7 +47,7 @@ async def generate_podcast_script(article_text: str, host_name: str, guest_name:
     2. Include reactions and agreements, such as "Oh", "Yeah", "Wow", "I totally agree", "Agreed", "I would disagree","I'd like to add...", "As it was quoted...", "That's fascinating", "Can you ellaborate...", "Uh-uh", "I can relate", "True", "Absolutely!", "I have a different perspective", "I know right?", "Tell me about it!", "Isn't that amazing?", "Interesting!", etc.
     3. Host will sometimes ask questions to Guest and Guest will answer
     4. Keep each dialogue segment between 5-30 words
-    5. Host and Guest will call each other by their first names
+    5. IMPORTANT:Host and Guest will call each other by their first names
     6. Cover all the main points of the content
     7. Include personal opinions
     8. Start with the Host greeting the listeners, then introducing himself and Guest by their names, Host will mention that this is a {content_type} they're discussing and introducing the topic setting up the context

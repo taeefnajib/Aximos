@@ -22,6 +22,9 @@ from pathlib import Path
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 from utils.cleanup import cleanup_podcast_files, cleanup_old_files
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = FastAPI(
     title="Podcast Generator API",
@@ -312,7 +315,7 @@ async def generate_podcast(
         # Validate content sources
         await validate_content_sources(youtube_url, text_content, web_url, file)
         
-        api_key = "AIzaSyCFmfS6nMgLo7vKjZI9QzqSvkiSFF6N8-0"  # Gemini API key
+        api_key = os.getenv("GEMINI_API_KEY")  # Gemini API key
         model = setup_model(api_key)
         
         # Get the content and its type

@@ -16,8 +16,9 @@ interface PodcastResponse {
 
 function App() {
   const [showPlayer, setShowPlayer] = useState(false);
-  const [host, setHost] = useState<Host | ''>('');
-  const [guest, setGuest] = useState<Guest | ''>('');
+  const [isPlayerMinimized, setIsPlayerMinimized] = useState(false);
+  const [host, setHost] = useState<Host | ''>('john-lewis');
+  const [guest, setGuest] = useState<Guest | ''>('sarah-cooper');
   const [error, setError] = useState('');
   const [audioUrl, setAudioUrl] = useState('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -52,6 +53,7 @@ function App() {
     startProgress();
     setError('');
     setShowPlayer(false);
+    setIsPlayerMinimized(false);
     setAudioUrl('');
 
     const formData = new FormData();
@@ -113,10 +115,10 @@ function App() {
       <main className="flex-grow container mx-auto px-4 py-8 md:py-12">
         <div className="text-center mb-8 md:mb-12">
           <h1 className="text-3xl md:text-4xl font-bold text-[#ffffff] mb-3 md:mb-4">
-            Generate Podcast From Your Content
+            Generate Mini-podcast From Your Content
           </h1>
           <p className="text-gray-300 text-base md:text-lg">
-            Transform your content into engaging podcasts with just a few clicks
+            Transform your content into engaging short podcasts with just a few clicks
           </p>
         </div>
 
@@ -150,14 +152,24 @@ function App() {
           </div>
         )}
 
-        {showPlayer && audioUrl && (
-          <div className="mt-8">
-            <h2 className="text-xl font-semibold mb-4 text-white">Generated Podcast</h2>
-            <AudioPlayerPopup
-              audioUrl={audioUrl}
-              onClose={() => setShowPlayer(false)}
-            />
-          </div>
+        {(showPlayer || isPlayerMinimized) && audioUrl && (
+          <AudioPlayerPopup 
+            audioUrl={audioUrl} 
+            isMinimized={isPlayerMinimized}
+            onClose={() => {
+              setShowPlayer(false);
+              setIsPlayerMinimized(false);
+              setAudioUrl('');
+            }}
+            onMinimize={() => {
+              setShowPlayer(false);
+              setIsPlayerMinimized(true);
+            }}
+            onMaximize={() => {
+              setShowPlayer(true);
+              setIsPlayerMinimized(false);
+            }}
+          />
         )}
 
         {isGenerating && (

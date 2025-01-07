@@ -10,3 +10,4 @@ youtube-transcript-api==0.6.1
 PyPDF2==3.0.1
 pydantic==2.5.3
 APScheduler==3.10.4
+python-dotenv==1.0.1

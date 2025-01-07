@@ -1,19 +1,29 @@
 import React from 'react';
-import { Github } from 'lucide-react';
+import GitHubButton from 'react-github-btn';
 
 export default function Navbar() {
   return (
     <nav className="bg-[#121212] px-6 py-4">
       <div className="max-w-7xl mx-auto flex justify-between items-center">
-        <h1 className="text-[#ffffff] text-2xl font-bold">Aximos</h1>
         <a 
-          href="https://github.com" 
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="text-[#ffffff] hover:text-[#069494] transition-colors"
+          href="/" 
+          onClick={(e) => {
+            e.preventDefault();
+            window.location.reload();
+          }}
+          className="cursor-pointer"
         >
-          <Github size={24} />
+          <h1 className="text-[#ffffff] text-2xl font-bold">Aximos</h1>
         </a>
+        <GitHubButton 
+          href="https://github.com/taeefnajib/Aximos" 
+          data-color-scheme="no-preference: light; light: light_high_contrast; dark: light_high_contrast;" 
+          data-size="large" 
+          data-show-count="true" 
+          aria-label="Star taeefnajib/Aximos on GitHub"
+        >
+          Star
+        </GitHubButton>
       </div>
     </nav>
   );
