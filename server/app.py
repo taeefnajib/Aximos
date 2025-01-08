@@ -345,7 +345,7 @@ async def generate_podcast(
         relative_path = os.path.relpath(podcast_file, PODCAST_DIR)
         
         # Schedule cleanup after 30 minutes using APScheduler
-        cleanup_time = datetime.now() + timedelta(minutes=30)
+        cleanup_time = datetime.now() + timedelta(minutes=10)
         scheduler.add_job(
             func=cleanup_podcast_files,
             trigger=DateTrigger(run_date=cleanup_time),
