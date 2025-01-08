@@ -116,12 +116,6 @@ export default function AudioPlayerPopup({
             <AudioControls
               isPlaying={isPlaying}
               onPlayPauseClick={handlePlayPause}
-              onPrevClick={() => {
-                if (audioRef.current) audioRef.current.currentTime -= 10;
-              }}
-              onNextClick={() => {
-                if (audioRef.current) audioRef.current.currentTime += 10;
-              }}
               minimal={true}
             />
             <div className="flex-1">
@@ -172,12 +166,6 @@ export default function AudioPlayerPopup({
             <AudioControls
               isPlaying={isPlaying}
               onPlayPauseClick={handlePlayPause}
-              onPrevClick={() => {
-                if (audioRef.current) audioRef.current.currentTime -= 10;
-              }}
-              onNextClick={() => {
-                if (audioRef.current) audioRef.current.currentTime += 10;
-              }}
             />
 
             <div className="flex justify-center mt-4">
