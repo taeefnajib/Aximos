@@ -7,6 +7,32 @@ from pydub.playback import play
 from generate import generate_podcast_script, setup_model
 import uuid
 
+# Voice configurations
+HOST_VOICES = [
+    {"name": "ChristopherNeural", "locale": "en-US", "gender": "Male"},
+    {"name": "RogerNeural", "locale": "en-US", "gender": "Male"},
+    {"name": "RyanNeural", "locale": "en-GB", "gender": "Male"},
+    {"name": "JennyNeural", "locale": "en-US", "gender": "Female"},
+    {"name": "MichelleNeural", "locale": "en-US", "gender": "Female"},
+    {"name": "LibbyNeural", "locale": "en-GB", "gender": "Female"},
+    {"name": "SoniaNeural", "locale": "en-GB", "gender": "Female"}
+]
+
+GUEST_VOICES = [
+    {"name": "EricNeural", "locale": "en-US", "gender": "Male"},
+    {"name": "GuyNeural", "locale": "en-US", "gender": "Male"},
+    {"name": "SteffanNeural", "locale": "en-US", "gender": "Male"},
+    {"name": "ThomasNeural", "locale": "en-GB", "gender": "Male"},
+    {"name": "AriaNeural", "locale": "en-US", "gender": "Female"}
+]
+
+def get_voice_by_name(name: str) -> dict:
+    """Get voice configuration by name."""
+    for voice in HOST_VOICES + GUEST_VOICES:
+        if voice["name"] == name:
+            return voice
+    return None
+
 async def text_to_speech(text, voice, output_file):
     try:
         print(f"Generating speech with voice {voice}")
@@ -21,20 +47,36 @@ async def text_to_speech(text, voice, output_file):
 def get_voice_for_person(person: str, name: str) -> str:
     """Get the appropriate voice based on the person's role and name"""
     print(f"Getting voice for {person} with name {name}")
+    
+    # Map frontend IDs to voice names
+    voice_map = {
+        # Host voices
+        'christopher-moore': 'en-US-ChristopherNeural',
+        'roger-bennett': 'en-US-RogerNeural',
+        'ryan-parker': 'en-GB-RyanNeural',
+        'jenny-miller': 'en-US-JennyNeural',
+        'michelle-davis': 'en-US-MichelleNeural',
+        'libby-wilson': 'en-GB-LibbyNeural',
+        'sonia-clarke': 'en-GB-SoniaNeural',
+        
+        # Guest voices
+        'aria-reynolds': 'en-US-AriaNeural',
+        'eric-thompson': 'en-US-EricNeural',
+        'guy-harrison': 'en-US-GuyNeural',
+        'steffan-brooks': 'en-US-SteffanNeural',
+        'thomas-wright': 'en-GB-ThomasNeural'
+    }
+    
+    # Get the voice from the map, or use defaults if not found
+    voice = voice_map.get(name)
+    if voice:
+        return voice
+        
+    # Default voices if ID not found
     if person == "Host":
-        if name == "john-lewis":
-            return "en-US-RogerNeural"
-        elif name == "stephanie-hall":
-            return "en-GB-SoniaNeural"
-        else:
-            return "en-US-RogerNeural"  # default host voice
-    else:  # Guest
-        if name == "sarah-cooper":
-            return "en-US-MichelleNeural"
-        elif name == "kevin-booker":
-            return "en-GB-ThomasNeural"
-        else:
-            return "en-US-MichelleNeural"  # default guest voice
+        return voice_map['christopher-moore']  # Christopher Moore as default host
+    else:
+        return voice_map['aria-reynolds']  # Aria Reynolds as default guest
 
 def clean_output_folder(folder_path):
     """Clean the output folder by removing and recreating it"""

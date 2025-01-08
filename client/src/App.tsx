@@ -17,8 +17,8 @@ interface PodcastResponse {
 function App() {
   const [showPlayer, setShowPlayer] = useState(false);
   const [isPlayerMinimized, setIsPlayerMinimized] = useState(false);
-  const [host, setHost] = useState<Host | ''>('john-lewis');
-  const [guest, setGuest] = useState<Guest | ''>('sarah-cooper');
+  const [host, setHost] = useState<Host | ''>('christopher-moore');
+  const [guest, setGuest] = useState<Guest | ''>('aria-reynolds');
   const [error, setError] = useState('');
   const [audioUrl, setAudioUrl] = useState('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);

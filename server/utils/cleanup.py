@@ -25,18 +25,26 @@ def cleanup_old_files(directory: str, max_age_minutes: int = 30) -> None:
         current_time = time.time()
         max_age_seconds = max_age_minutes * 60
 
+        # Process all items in the directory
         for item in directory_path.iterdir():
             try:
+                # Skip the directory itself and any hidden files
+                if item.name.startswith('.'):
+                    continue
+
                 item_age = current_time - item.stat().st_mtime
                 if item_age > max_age_seconds:
-                    if item.is_file():
-                        item.unlink()
-                        logger.info(f"Deleted old file: {item}")
-                    elif item.is_dir():
+                    if item.is_dir():
                         shutil.rmtree(item)
                         logger.info(f"Deleted old directory: {item}")
+                    elif item.is_file():
+                        item.unlink()
+                        logger.info(f"Deleted old file: {item}")
+
             except Exception as e:
-                logger.error(f"Error cleaning up {item}: {str(e)}")
+                # Log the error but continue processing other items
+                logger.error(f"Error processing {item}: {str(e)}")
+                continue
 
     except Exception as e:
         logger.error(f"Error during cleanup: {str(e)}")
@@ -50,17 +58,27 @@ def cleanup_podcast_files(podcast_id: str, output_dir: str) -> None:
         output_dir (str): Base directory for podcast output
     """
     try:
-        # Remove the podcast directory
-        podcast_dir = Path(output_dir) / podcast_id
-        if podcast_dir.exists():
-            shutil.rmtree(podcast_dir)
-            logger.info(f"Cleaned up podcast directory: {podcast_dir}")
-            
-        # Remove any associated script files
-        script_file = Path(output_dir) / f"{podcast_id}_script.json"
-        if script_file.exists():
-            script_file.unlink()
-            logger.info(f"Cleaned up script file: {script_file}")
-            
+        # Add a small delay to ensure the file is served
+        time.sleep(2)
+
+        podcast_path = Path(output_dir) / podcast_id
+        
+        # If podcast_id is a file path, get its directory
+        if podcast_path.is_file():
+            podcast_dir = podcast_path.parent
+        else:
+            podcast_dir = podcast_path
+
+        # Only proceed if the directory exists
+        if podcast_dir.exists() and podcast_dir.is_dir():
+            # Add extra check to ensure we're not deleting the root output directory
+            if podcast_dir.name != Path(output_dir).name:
+                shutil.rmtree(podcast_dir)
+                logger.info(f"Deleted podcast directory: {podcast_dir}")
+            else:
+                logger.warning(f"Attempted to delete root output directory, skipping: {podcast_dir}")
+        else:
+            logger.warning(f"Podcast directory not found: {podcast_dir}")
+
     except Exception as e:
         logger.error(f"Error cleaning up podcast {podcast_id}: {str(e)}")

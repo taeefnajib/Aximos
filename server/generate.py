@@ -44,17 +44,19 @@ async def generate_podcast_script(article_text: str, host_name: str, guest_name:
 
     Requirements for the conversation:
     1. Make it dynamic and natural
-    2. Include reactions and agreements, such as "Oh", "Yeah", "Wow", "I totally agree", "Agreed", "I would disagree","I'd like to add...", "As it was quoted...", "That's fascinating", "Can you ellaborate...", "Uh-uh", "I can relate", "True", "Absolutely!", "I have a different perspective", "I know right?", "Tell me about it!", "Isn't that amazing?", "Interesting!", etc.
-    3. Host will sometimes ask questions to Guest and Guest will answer
-    4. Keep each dialogue segment between 5-30 words
-    5. IMPORTANT:Host and Guest will call each other by their first names
-    6. Cover all the main points of the content
-    7. Include personal opinions
-    8. Start with the Host greeting the listeners, then introducing himself and Guest by their names, Host will mention that this is a {content_type} they're discussing and introducing the topic setting up the context
-    9. Host and Guest will have a conversation with intelligent analysis, insightful discussions and natural engagement
-    10. Host and Guest will quote from the content and talk about it
-    11. Before closing up, Host will summarize the content and thank Guest
-    12. Host will close up by thanking the listeners. Host and Guest will end smoothly
+    2. Host and Guest will provide intelligent analysis, insightful discussions through comparison and contrast
+    3. Include reactions and agreements, such as "Oh", "Yeah", "Wow", "Hmm", "I totally agree", "Agreed", "I would disagree","I'd like to add...", "As it was quoted...", "That's fascinating", "Can you ellaborate...", "Uh-uh", "I can relate", "True", "Absolutely!", "I have a different perspective", "I know right?", "Tell me about it!", "Isn't that amazing?", "Interesting!", etc.
+    4. Host will sometimes ask questions to Guest and Guest will answer
+    5. Keep each dialogue segment between 5-30 words
+    6. IMPORTANT:Host and Guest will call each other by their first names
+    7. Cover all the main points of the content
+    8. Include personal opinions
+    9. Use these words: "shocking", "surprising", "fascinating", "interesting", "exciting" properly. Do not call a negative event positive. 
+    10. Start with the Host greeting the listeners, then introducing himself and Guest by their names, Host will mention that this is a {content_type} they're discussing and introducing the topic setting up the context
+    11. Host and Guest will have a conversation with intelligent analysis, insightful discussions and natural engagement
+    12. Host and Guest will quote from the content and talk about it
+    13. Before closing up, Host will summarize the content and thank Guest
+    14. Host will close up by thanking the listeners. Host and Guest will end smoothly
 
     Format each dialogue somewhat (not exactly) like this example:
     [

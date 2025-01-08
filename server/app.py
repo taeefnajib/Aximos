@@ -23,6 +23,8 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 from utils.cleanup import cleanup_podcast_files, cleanup_old_files
 from dotenv import load_dotenv
+from datetime import datetime, timedelta
+from apscheduler.triggers.date import DateTrigger
 
 load_dotenv()
 
@@ -100,8 +102,8 @@ async def startup_event():
 # Set up the cleanup scheduler
 scheduler = BackgroundScheduler()
 scheduler.add_job(
-    func=lambda: cleanup_old_files(PODCAST_DIR, max_age_minutes=30),
-    trigger=IntervalTrigger(minutes=30),  # Run every 30 minutes
+    func=lambda: cleanup_old_files(PODCAST_DIR, 30),
+    trigger=IntervalTrigger(minutes=30),
     id='cleanup_job',
     name='Clean up old podcast files',
     replace_existing=True
@@ -336,13 +338,17 @@ async def generate_podcast(
         # Return relative path from PODCAST_DIR
         relative_path = os.path.relpath(podcast_file, PODCAST_DIR)
         
-        # Schedule cleanup of podcast files after 30 minutes
-        background_tasks.add_task(
-            cleanup_podcast_files,
-            podcast_id=relative_path,
-            output_dir=PODCAST_DIR
+        # Schedule cleanup after 30 minutes using APScheduler
+        cleanup_time = datetime.now() + timedelta(minutes=30)
+        scheduler.add_job(
+            func=cleanup_podcast_files,
+            trigger=DateTrigger(run_date=cleanup_time),
+            args=[os.path.dirname(relative_path), PODCAST_DIR],
+            id=f'cleanup_{os.path.dirname(relative_path)}',
+            name=f'Cleanup podcast {relative_path}',
+            replace_existing=True
         )
-        
+
         return PodcastResponse(
             script=script,
             audio_url=f"/podcasts/{relative_path}"
