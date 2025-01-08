@@ -28,18 +28,36 @@ def cleanup_old_files(directory: str, max_age_minutes: int = 30) -> None:
         # Process all items in the directory
         for item in directory_path.iterdir():
             try:
-                # Skip the directory itself and any hidden files
+                # Skip the directory itself, hidden files, and current files
                 if item.name.startswith('.'):
                     continue
 
-                item_age = current_time - item.stat().st_mtime
+                # Get the modification time of the directory or its contents
+                if item.is_dir():
+                    # For directories, check the newest file within
+                    try:
+                        newest_time = max(
+                            (f.stat().st_mtime for f in item.rglob('*') if f.is_file()),
+                            default=item.stat().st_mtime
+                        )
+                        item_age = current_time - newest_time
+                    except Exception:
+                        # If we can't check contents, use directory time
+                        item_age = current_time - item.stat().st_mtime
+                else:
+                    item_age = current_time - item.stat().st_mtime
+
+                # Delete if older than max age
                 if item_age > max_age_seconds:
-                    if item.is_dir():
-                        shutil.rmtree(item)
-                        logger.info(f"Deleted old directory: {item}")
-                    elif item.is_file():
-                        item.unlink()
-                        logger.info(f"Deleted old file: {item}")
+                    try:
+                        if item.is_dir():
+                            shutil.rmtree(item)
+                            logger.info(f"Deleted old directory: {item}")
+                        else:
+                            item.unlink()
+                            logger.info(f"Deleted old file: {item}")
+                    except Exception as e:
+                        logger.error(f"Failed to delete {item}: {str(e)}")
 
             except Exception as e:
                 # Log the error but continue processing other items

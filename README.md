@@ -36,6 +36,7 @@ Aximos is an innovative AI-powered tool that transforms your content into engagi
 * Tools:
     - Vite
     - Tailwind CSS
+* Image Credit: [Unsplash](https://unsplash.com)
 
 ## Available Voices
 
@@ -123,12 +124,12 @@ The application will be available at:
 
 ## Contributing
 
-1. Fork the repository on GitHub: https://github.com/aximos/aximos
-2. Clone the repository to your local machine: `git clone https://github.com/aximos/aximos.git`
+1. Fork the repository on GitHub: https://github.com/taeefnajib/Aximos
+2. Clone the repository to your local machine: `git clone https://github.com/taeefnajib/Aximos.git`
 3. Create a new branch: `git checkout -b my-branch`
 4. Make your changes and commit them: `git commit -m "My changes"`
 5. Push your changes to your fork: `git push origin my-branch`
-6. Create a pull request: https://github.com/aximos/aximos/pulls
+6. Create a pull request: https://github.com/taeefnajib/Aximos/pulls
 
 ## License
 

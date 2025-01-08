@@ -1,3 +1,6 @@
 server/podcast_output/*
 client/node_modules
 server/.env
+__pycache__/
+*.py[cod]
+*$py.class
