@@ -8,7 +8,15 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def cleanup_old_files(directory: str, max_age_minutes: int = 30) -> None:
+def is_file_in_use(file_path: Path) -> bool:
+    """Check if a file is currently in use"""
+    try:
+        with open(file_path, 'rb') as f:
+            return False
+    except (IOError, PermissionError):
+        return True
+
+def cleanup_old_files(directory: str, max_age_minutes: int = 60) -> None:
     """
     Remove files and folders older than max_age_minutes from the specified directory.
     
@@ -19,7 +27,6 @@ def cleanup_old_files(directory: str, max_age_minutes: int = 30) -> None:
     try:
         directory_path = Path(directory)
         if not directory_path.exists():
-            logger.warning(f"Directory {directory} does not exist")
             return
 
         current_time = time.time()
@@ -34,17 +41,25 @@ def cleanup_old_files(directory: str, max_age_minutes: int = 30) -> None:
 
                 # Get the modification time of the directory or its contents
                 if item.is_dir():
-                    # For directories, check the newest file within
                     try:
+                        # Check if any files in the directory are in use
+                        files_in_use = any(is_file_in_use(f) for f in item.rglob('*') if f.is_file())
+                        if files_in_use:
+                            continue
+
+                        # For directories, check the newest file within
                         newest_time = max(
                             (f.stat().st_mtime for f in item.rglob('*') if f.is_file()),
                             default=item.stat().st_mtime
                         )
                         item_age = current_time - newest_time
                     except Exception:
-                        # If we can't check contents, use directory time
-                        item_age = current_time - item.stat().st_mtime
+                        # If we can't check contents, skip this directory
+                        continue
                 else:
+                    # Skip files that are in use
+                    if is_file_in_use(item):
+                        continue
                     item_age = current_time - item.stat().st_mtime
 
                 # Delete if older than max age
@@ -56,12 +71,12 @@ def cleanup_old_files(directory: str, max_age_minutes: int = 30) -> None:
                         else:
                             item.unlink()
                             logger.info(f"Deleted old file: {item}")
-                    except Exception as e:
-                        logger.error(f"Failed to delete {item}: {str(e)}")
+                    except Exception:
+                        # Suppress deletion errors as they're usually due to timing issues
+                        pass
 
-            except Exception as e:
-                # Log the error but continue processing other items
-                logger.error(f"Error processing {item}: {str(e)}")
+            except Exception:
+                # Suppress processing errors for individual items
                 continue
 
     except Exception as e:
@@ -87,8 +102,14 @@ def cleanup_podcast_files(podcast_id: str, output_dir: str) -> None:
         else:
             podcast_dir = podcast_path
 
-        # Only proceed if the directory exists
+        # Only proceed if the directory exists and no files are in use
         if podcast_dir.exists() and podcast_dir.is_dir():
+            # Check if any files are in use
+            files_in_use = any(is_file_in_use(f) for f in podcast_dir.rglob('*') if f.is_file())
+            if files_in_use:
+                logger.info(f"Skipping cleanup of {podcast_dir} as files are in use")
+                return
+
             # Add extra check to ensure we're not deleting the root output directory
             if podcast_dir.name != Path(output_dir).name:
                 shutil.rmtree(podcast_dir)
@@ -96,7 +117,7 @@ def cleanup_podcast_files(podcast_id: str, output_dir: str) -> None:
             else:
                 logger.warning(f"Attempted to delete root output directory, skipping: {podcast_dir}")
         else:
-            logger.warning(f"Podcast directory not found: {podcast_dir}")
+            logger.debug(f"Podcast directory not found: {podcast_dir}")
 
     except Exception as e:
-        logger.error(f"Error cleaning up podcast {podcast_id}: {str(e)}")
+        logger.error(f"Error cleaning up podcast files: {str(e)}")

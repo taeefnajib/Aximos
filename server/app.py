@@ -70,23 +70,28 @@ async def cleanup_old_files():
             for file in os.listdir(UPLOAD_DIR):
                 file_path = os.path.join(UPLOAD_DIR, file)
                 try:
-                    # Remove all files in upload directory
-                    os.remove(file_path)
+                    if os.path.isfile(file_path):
+                        os.remove(file_path)
                 except Exception as e:
                     print(f"Error removing file {file_path}: {e}")
             
             # Clean up podcast directory
-            for file in os.listdir(PODCAST_DIR):
-                file_path = os.path.join(PODCAST_DIR, file)
+            for item in os.listdir(PODCAST_DIR):
+                item_path = os.path.join(PODCAST_DIR, item)
                 try:
-                    # Get file creation time
-                    file_time = datetime.fromtimestamp(os.path.getctime(file_path))
+                    # Get item creation time
+                    item_time = datetime.fromtimestamp(os.path.getctime(item_path))
                     # Remove if older than 1 hour
-                    if current_time - file_time > timedelta(hours=1):
-                        os.remove(file_path)
-                        print(f"Removed old podcast file: {file}")
+                    if current_time - item_time > timedelta(hours=1):
+                        if os.path.isdir(item_path):
+                            shutil.rmtree(item_path)
+                            print(f"Removed old podcast directory: {item}")
+                        else:
+                            os.remove(item_path)
+                            print(f"Removed old podcast file: {item}")
                 except Exception as e:
-                    print(f"Error processing file {file_path}: {e}")
+                    if "Is a directory" not in str(e):  # Suppress directory-related errors
+                        print(f"Error processing {item_path}: {e}")
             
         except Exception as e:
             print(f"Error during cleanup: {e}")
@@ -102,11 +107,12 @@ async def startup_event():
 # Set up the cleanup scheduler
 scheduler = BackgroundScheduler()
 scheduler.add_job(
-    func=lambda: cleanup_old_files(PODCAST_DIR, 30),
-    trigger=IntervalTrigger(minutes=30),
+    func=lambda: cleanup_old_files(),  
+    trigger=IntervalTrigger(minutes=15),  
     id='cleanup_job',
     name='Clean up old podcast files',
-    replace_existing=True
+    replace_existing=True,
+    max_instances=1  
 )
 scheduler.start()
 
